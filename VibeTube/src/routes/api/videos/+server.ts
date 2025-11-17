@@ -15,6 +15,7 @@ async function getVideoDuration(filePath: string): Promise<number> {
 		return Math.floor(parseFloat(stdout.trim()));
 	} catch (error) {
 		console.error('Error getting video duration:', error);
+		console.error('FFprobe command:', `ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "${filePath}"`);
 		return 0;
 	}
 }
@@ -121,6 +122,7 @@ export const POST: RequestHandler = async (event) => {
 		return json({ video }, { status: 201 });
 	} catch (error) {
 		console.error('Upload error:', error);
+		console.error('Form data:', formData);
 		return json({ error: 'Upload failed' }, { status: 500 });
 	}
 };

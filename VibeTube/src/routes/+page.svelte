@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { getContext } from 'svelte';
+	import axios from 'axios';
 	import { writable } from 'svelte/store';
 	import Header from '$lib/components/Header.svelte';
 	import Sidebar from '$lib/components/Sidebar.svelte';
@@ -17,19 +18,21 @@
 
 	onMount(async () => {
 		try {
-			const userRes = await fetch('/api/auth/me');
-			if (userRes.ok) {
-				const userData = await userRes.json();
-				user = userData.user;
+			const userRes = await axios.get('/api/auth/me');
+			if (userRes.status === 200) {
+				user = userRes.data.user;
 			}
 		} catch (e) {
-			console.log('Not authenticated');
+			console.error('Error fetching user:', e);
 		}
 
-		const res = await fetch('/api/videos');
-		if (res.ok) {
-			const data = await res.json();
-			videos = data.videos;
+		try {
+			const res = await axios.get('/api/videos');
+			if (res.status === 200) {
+				videos = res.data.videos;
+			}
+		} catch (error) {
+			console.error('Error fetching videos:', error);
 		}
 		loading = false;
 	});
